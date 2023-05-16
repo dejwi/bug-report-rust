@@ -1,10 +1,18 @@
 use actix_web::{middleware::Logger, web, App, HttpServer};
 use dotenv::dotenv;
+use serde::{Deserialize, Serialize};
 use sqlx::{postgres::PgPoolOptions, Pool, Postgres};
+use uuid::Uuid;
 
 mod models;
 mod schema;
 mod services;
+
+#[derive(Serialize, Deserialize)]
+pub struct Claims {
+    pub id: Uuid,
+    pub expire: i64,
+}
 
 #[derive(Clone)]
 pub struct AppState {
