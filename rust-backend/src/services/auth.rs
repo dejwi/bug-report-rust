@@ -90,10 +90,10 @@ pub async fn login(
         Ok(_) => {
             let jwt_secret = std::env::var("JWT_SECRET").expect("JWT_SECRET must be set");
 
-            let expire = (Utc::now() + Duration::days(30)).timestamp();
+            let exp = (Utc::now() + Duration::days(30)).timestamp();
             let claims = Claims {
-                id: user.id,
-                expire,
+                id: user.id.to_string(),
+                exp,
             };
             let token = encode(
                 &Header::default(),
