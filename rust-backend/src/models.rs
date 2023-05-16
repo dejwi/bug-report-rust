@@ -1,8 +1,8 @@
-use serde::{Deserialize, Serialize};
+use serde::Serialize;
 use sqlx::FromRow;
 use uuid::Uuid;
 
-#[derive(Serialize, Deserialize, FromRow)]
+#[derive(Serialize, FromRow)]
 pub struct UserModel {
     pub id: Uuid,
     pub username: String,
@@ -11,13 +11,23 @@ pub struct UserModel {
     pub created_at: chrono::DateTime<chrono::Utc>,
 }
 
-#[derive(Serialize, Deserialize, FromRow)]
+#[derive(Debug, sqlx::Type, Serialize)]
+pub enum BugReportStatus {
+    OPEN,
+    CLOSED,
+    SOLVED,
+    REVIEW,
+    ACCEPTED,
+}
+
+#[derive(Serialize, FromRow)]
 pub struct BugReportModel {
     pub id: Uuid,
     pub title: String,
     pub description: Option<String>,
-    #[serde(rename = "userId")]
-    pub user_id: Uuid,
+    pub status: BugReportStatus,
+    #[serde(rename = "authorId")]
+    pub author_id: Uuid,
     #[serde(rename = "createdAt")]
     pub created_at: chrono::DateTime<chrono::Utc>,
 }

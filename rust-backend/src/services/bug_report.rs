@@ -16,7 +16,7 @@ pub async fn bug_report_create(
 ) -> impl Responder {
     match sqlx::query_as!(
         BugReportModel,
-        "INSERT INTO bugReports (title, description, user_id) VALUES ($1, $2, $3) RETURNING *",
+        r#"INSERT INTO bugReports (title, description, author_id) VALUES ($1, $2, $3) RETURNING id, title, description, author_id, status as "status: _", created_at"#,
         body.title,
         body.description,
         Uuid::from_str(&user.id[..]).unwrap()
