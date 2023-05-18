@@ -1,5 +1,8 @@
-use serde::Serialize;
-use sqlx::FromRow;
+use serde::{Deserialize, Serialize};
+use sqlx::{
+    postgres::{PgHasArrayType, PgTypeInfo},
+    FromRow, Type,
+};
 use uuid::Uuid;
 
 #[derive(Serialize, FromRow)]
@@ -11,13 +14,20 @@ pub struct UserModel {
     pub created_at: chrono::DateTime<chrono::Utc>,
 }
 
-#[derive(Debug, sqlx::Type, Serialize)]
+#[derive(Debug, Type, Serialize, Deserialize)]
+#[sqlx(type_name = "bugReportStatus")]
 pub enum BugReportStatus {
     OPEN,
     CLOSED,
     SOLVED,
     REVIEW,
     ACCEPTED,
+}
+
+impl PgHasArrayType for BugReportStatus {
+    fn array_type_info() -> sqlx::postgres::PgTypeInfo {
+        PgTypeInfo::with_name("_bugReportStatus")
+    }
 }
 
 #[derive(Serialize, FromRow)]
