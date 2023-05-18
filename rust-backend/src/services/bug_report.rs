@@ -45,7 +45,7 @@ pub async fn bug_report_all(
     app_state: web::Data<AppState>,
     filters: Query<FindAllQuery>,
 ) -> impl Responder {
-    let mut query = QueryBuilder::new("SELECT *, users.id as user_id, users.username as user_username FROM bugReports JOIN users on bugReports.author_id = users.id");
+    let mut query = QueryBuilder::new("SELECT bugReports.id, title, description, status, bugReports.created_at, users.id as user_id, users.username as user_username FROM bugReports JOIN users on bugReports.author_id = users.id");
 
     if let Some(ref statuses) = filters.status {
         query.push(" AND status = ANY(");
@@ -111,11 +111,8 @@ pub async fn bug_report_update(
 }
 
 #[get("/bug-reports/{id}")]
-pub async fn bug_reports_one(
-    app_state: web::Data<AppState>,
-    id: web::Path<Uuid>,
-) -> impl Responder {
-    match sqlx::query_as::<_, BugReportWithAuthorSchema>("SELECT id, status, title, description, created_at, users.id as user_id, users.username as user_username FROM bugReports WHERE id = $1 JOIN users on bugReports.id = users.id")
+pub async fn bug_report_one(app_state: web::Data<AppState>, id: web::Path<Uuid>) -> impl Responder {
+    match sqlx::query_as::<_, BugReportWithAuthorSchema>("SELECT bugReports.id, status, title, description, bugReports.created_at, users.id as user_id, users.username as user_username FROM bugReports JOIN users ON bugReports.author_id = users.id WHERE bugReports.id = $1")
     .bind(*id)
     .fetch_optional(&app_state.db)
     .await {
