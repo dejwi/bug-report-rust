@@ -24,10 +24,10 @@ pub async fn register(
     }
 
     let salt = SaltString::generate(&mut OsRng);
-    let hash_secret = std::env::var("HASH_SECRET").expect("HASH_SECRET must be set");
+    let hash_secret = app_state.config.hash_secret.as_bytes();
 
     let argon2 = Argon2::new_with_secret(
-        hash_secret.as_bytes(),
+        hash_secret,
         Algorithm::Argon2id,
         Version::V0x13,
         Params::default(),
@@ -75,9 +75,9 @@ pub async fn login(
         Some(user) => user,
     };
 
-    let hash_secret = std::env::var("HASH_SECRET").expect("HASH_SECRET must be set");
+    let hash_secret = app_state.config.hash_secret.as_bytes();
     let argon2 = Argon2::new_with_secret(
-        hash_secret.as_bytes(),
+        hash_secret,
         Algorithm::Argon2id,
         Version::V0x13,
         Params::default(),
@@ -87,7 +87,7 @@ pub async fn login(
     let parsed_hash = PasswordHash::new(&user.password).unwrap();
     match argon2.verify_password(body.password.as_bytes(), &parsed_hash) {
         Ok(_) => {
-            let jwt_secret = std::env::var("JWT_SECRET").expect("JWT_SECRET must be set");
+            let jwt_secret = app_state.config.jwt_secret.as_bytes();
 
             let exp = (Utc::now() + Duration::days(30)).timestamp();
             let claims = Claims {
@@ -97,7 +97,7 @@ pub async fn login(
             let token = encode(
                 &Header::default(),
                 &claims,
-                &EncodingKey::from_secret(jwt_secret.as_bytes()),
+                &EncodingKey::from_secret(jwt_secret),
             )
             .unwrap();
 

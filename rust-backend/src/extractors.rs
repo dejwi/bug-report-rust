@@ -12,7 +12,7 @@ use serde::{de::DeserializeOwned, Deserialize, Serialize};
 use serde_json::json;
 use uuid::Uuid;
 
-use crate::Claims;
+use crate::{AppState, Claims};
 
 #[derive(Serialize, Deserialize)]
 pub struct AuthUser {
@@ -40,10 +40,16 @@ impl FromRequest for AuthUser {
 
         let token = &token[7..];
 
-        let jwt_secret = std::env::var("JWT_SECRET").expect("JWT_SECRET must be set");
+        let jwt_secret = req
+            .app_data::<AppState>()
+            .unwrap()
+            .config
+            .jwt_secret
+            .as_bytes();
+
         let decode = decode::<Claims>(
             token,
-            &DecodingKey::from_secret(jwt_secret.as_bytes()),
+            &DecodingKey::from_secret(jwt_secret),
             &Validation::default(),
         );
 

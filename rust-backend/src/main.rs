@@ -1,8 +1,10 @@
 use actix_web::{middleware::Logger, web, App, HttpServer};
+use config::Config;
 use dotenv::dotenv;
 use serde::{Deserialize, Serialize};
 use sqlx::{postgres::PgPoolOptions, Pool, Postgres};
 
+mod config;
 mod extractors;
 mod models;
 mod schema;
@@ -17,21 +19,29 @@ pub struct Claims {
 #[derive(Clone)]
 pub struct AppState {
     pub db: Pool<Postgres>,
+    pub config: Config,
 }
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
     dotenv().ok();
 
+    let config = match Config::build() {
+        Ok(config) => config,
+        Err(error) => {
+            eprintln!("Failed to build config from env: {}", error.to_string());
+            std::process::exit(1);
+        }
+    };
+
     if std::env::var_os("RUST_LOG").is_none() {
         std::env::set_var("RUST_LOG", "actix_web=info,error,warn");
     }
     env_logger::init();
 
-    let database_url = std::env::var("DATABASE_URL").expect("DATABASE_URL must be set");
     let pool = match PgPoolOptions::new()
         .max_connections(10)
-        .connect(&database_url)
+        .connect(&config.database_url)
         .await
     {
         Ok(pool) => pool,
@@ -41,7 +51,7 @@ async fn main() -> std::io::Result<()> {
         }
     };
 
-    let app_state = AppState { db: pool };
+    let app_state = AppState { db: pool, config };
 
     HttpServer::new(move || {
         App::new()
