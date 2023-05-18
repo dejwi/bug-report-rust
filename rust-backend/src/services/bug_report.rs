@@ -1,6 +1,6 @@
 use std::str::FromStr;
 
-use actix_web::{get, post, web, HttpResponse, Responder};
+use actix_web::{get, post, put, web, HttpResponse, Responder};
 use serde::Deserialize;
 use serde_json::json;
 use sqlx::QueryBuilder;
@@ -8,8 +8,8 @@ use uuid::Uuid;
 
 use crate::{
     extractors::{AuthUser, Query},
-    models::BugReportStatus,
-    schema::{BugReportWithAuthorSchema, CreateBugReportSchema},
+    models::{BugReportModel, BugReportStatus},
+    schema::{BugReportWithAuthorSchema, CreateBugReportSchema, UpdateBugReportSchema},
     AppState,
 };
 
@@ -60,5 +60,57 @@ pub async fn bug_report_all(
     {
         Err(err) => HttpResponse::InternalServerError().json(json!({ "message": err.to_string() })),
         Ok(bug_reports) => HttpResponse::Ok().json(bug_reports),
+    }
+}
+
+#[put("/bug-reports/{id}")]
+pub async fn bug_report_update(
+    id: web::Path<String>,
+    user: AuthUser,
+    app_state: web::Data<AppState>,
+    body: web::Json<UpdateBugReportSchema>,
+) -> impl Responder {
+    let id = match Uuid::from_str(&id.to_string()) {
+        Ok(uuid) => uuid,
+        Err(_) => return HttpResponse::NotFound().json(json!({"message": "Invalid id"})),
+    };
+
+    let report = match sqlx::query_as!(
+        BugReportModel,
+        r#"SELECT id, status as "status: _", author_id, title, description, created_at FROM bugReports WHERE id = $1"#,
+        id
+    )
+    .fetch_optional(&app_state.db)
+    .await
+    {
+        Err(err) => {
+            return HttpResponse::InternalServerError().json(json!({ "message": err.to_string() }))
+        }
+        Ok(None) => {
+            return HttpResponse::NotFound().json(json!({ "message": "Bug report doesn't exist" }))
+        }
+        Ok(Some(report)) => report,
+    };
+
+    let is_author = user.id == report.author_id.to_string();
+    if body.status == Some(BugReportStatus::SOLVED) && !is_author {
+        return HttpResponse::Unauthorized().json(
+            json!({"message": "You have to be an author in order to mark report as solved"}),
+        );
+    }
+
+    match sqlx::query_as!(
+        BugReportModel,
+        r#"UPDATE bugReports SET title = $1, description = $2, status = $3 WHERE id = $4 RETURNING id, status as "status: _", author_id, title, description, created_at"#,
+        body.title.as_ref().unwrap_or(&report.title),
+        body.description.as_ref().or(report.description.as_ref()),
+        body.status.as_ref().unwrap_or(&report.status) as _,
+        id
+    )
+    .fetch_one(&app_state.db)
+    .await
+    {
+        Err(err) =>  HttpResponse::InternalServerError().json(json!({ "message": err.to_string() })),
+        Ok(report) => HttpResponse::Ok().json(report)
     }
 }

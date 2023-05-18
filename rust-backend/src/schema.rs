@@ -10,12 +10,6 @@ pub struct AuthUserSchema {
     pub password: String,
 }
 
-#[derive(Deserialize)]
-pub struct CreateBugReportSchema {
-    pub title: String,
-    pub description: Option<String>,
-}
-
 #[derive(Serialize, FromRow)]
 pub struct BasicUserSchema {
     #[sqlx(rename = "user_id")]
@@ -34,4 +28,17 @@ pub struct BugReportWithAuthorSchema {
     pub author: BasicUserSchema,
     #[serde(rename = "createdAt")]
     pub created_at: chrono::DateTime<chrono::Utc>,
+}
+
+#[derive(Deserialize)]
+pub struct CreateBugReportSchema {
+    pub title: String,
+    pub description: Option<String>,
+}
+
+#[derive(Deserialize)]
+pub struct UpdateBugReportSchema {
+    pub title: Option<String>,
+    pub description: Option<String>,
+    pub status: Option<BugReportStatus>,
 }

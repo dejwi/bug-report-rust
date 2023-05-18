@@ -14,7 +14,7 @@ pub struct UserModel {
     pub created_at: chrono::DateTime<chrono::Utc>,
 }
 
-#[derive(Debug, Type, Serialize, Deserialize)]
+#[derive(Debug, Type, Serialize, Deserialize, PartialEq)]
 #[sqlx(type_name = "bugReportStatus")]
 pub enum BugReportStatus {
     OPEN,
