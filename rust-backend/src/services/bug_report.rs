@@ -65,20 +65,15 @@ pub async fn bug_report_all(
 
 #[put("/bug-reports/{id}")]
 pub async fn bug_report_update(
-    id: web::Path<String>,
+    id: web::Path<Uuid>,
     user: AuthUser,
     app_state: web::Data<AppState>,
     body: web::Json<UpdateBugReportSchema>,
 ) -> impl Responder {
-    let id = match Uuid::from_str(&id.to_string()) {
-        Ok(uuid) => uuid,
-        Err(_) => return HttpResponse::NotFound().json(json!({"message": "Invalid id"})),
-    };
-
     let report = match sqlx::query_as!(
         BugReportModel,
         r#"SELECT id, status as "status: _", author_id, title, description, created_at FROM bugReports WHERE id = $1"#,
-        id
+        *id
     )
     .fetch_optional(&app_state.db)
     .await
@@ -105,7 +100,7 @@ pub async fn bug_report_update(
         body.title.as_ref().unwrap_or(&report.title),
         body.description.as_ref().or(report.description.as_ref()),
         body.status.as_ref().unwrap_or(&report.status) as _,
-        id
+        *id
     )
     .fetch_one(&app_state.db)
     .await
