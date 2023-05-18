@@ -8,4 +8,6 @@ pub fn set_services(conf: &mut web::ServiceConfig) {
     conf.service(auth::login);
     conf.service(bug_report::bug_report_create);
     conf.service(bug_report::bug_report_all);
+    conf.service(bug_report::bug_report_update);
+    conf.service(bug_report::bug_report_one);
 }
