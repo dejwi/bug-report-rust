@@ -26,7 +26,7 @@ pub async fn bug_report_create(
     )
     .bind(&body.title)
     .bind(&body.description)
-    .bind(Uuid::from_str(&user.id[..]).unwrap())
+    .bind(user.id)
     .fetch_one(&app_state.db)
     .await
     {
@@ -87,7 +87,7 @@ pub async fn bug_report_update(
         Ok(Some(report)) => report,
     };
 
-    let is_author = user.id == report.author_id.to_string();
+    let is_author = user.id == report.author_id;
     if body.status == Some(BugReportStatus::SOLVED) && !is_author {
         return HttpResponse::Unauthorized().json(
             json!({"message": "You have to be an author in order to mark report as solved"}),

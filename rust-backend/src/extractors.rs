@@ -1,6 +1,7 @@
 use std::{
     future::{ready, Ready},
     ops,
+    str::FromStr,
 };
 
 use actix_web::{
@@ -8,12 +9,13 @@ use actix_web::{
 };
 use jsonwebtoken::{decode, errors::ErrorKind as JWTError, DecodingKey, Validation};
 use serde::{de::DeserializeOwned, Deserialize, Serialize};
+use uuid::Uuid;
 
 use crate::Claims;
 
 #[derive(Serialize, Deserialize)]
 pub struct AuthUser {
-    pub id: String,
+    pub id: Uuid,
 }
 
 impl FromRequest for AuthUser {
@@ -44,7 +46,7 @@ impl FromRequest for AuthUser {
 
         match decode {
             Ok(token) => ready(Ok(AuthUser {
-                id: token.claims.id,
+                id: Uuid::from_str(&token.claims.id).unwrap(),
             })),
             Err(err) if err.kind() == &JWTError::ExpiredSignature => {
                 ready(Err(error::ErrorUnauthorized("Auth token expired!")))
