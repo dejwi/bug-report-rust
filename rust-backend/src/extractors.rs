@@ -9,6 +9,7 @@ use actix_web::{
 };
 use jsonwebtoken::{decode, errors::ErrorKind as JWTError, DecodingKey, Validation};
 use serde::{de::DeserializeOwned, Deserialize, Serialize};
+use serde_json::json;
 use uuid::Uuid;
 
 use crate::Claims;
@@ -23,7 +24,9 @@ impl FromRequest for AuthUser {
     type Future = Ready<Result<Self, Self::Error>>;
 
     fn from_request(req: &HttpRequest, _: &mut Payload) -> Self::Future {
-        let un_auth_err = ready(Err(error::ErrorUnauthorized("Invalid auth token!")));
+        let un_auth_err = ready(Err(error::ErrorUnauthorized(
+            json!({"message": "Invalid auth token!"}),
+        )));
 
         let token = match req.headers().get(header::AUTHORIZATION) {
             Some(val) => val.to_str().unwrap_or(""),
@@ -48,9 +51,9 @@ impl FromRequest for AuthUser {
             Ok(token) => ready(Ok(AuthUser {
                 id: Uuid::from_str(&token.claims.id).unwrap(),
             })),
-            Err(err) if err.kind() == &JWTError::ExpiredSignature => {
-                ready(Err(error::ErrorUnauthorized("Auth token expired!")))
-            }
+            Err(err) if err.kind() == &JWTError::ExpiredSignature => ready(Err(
+                error::ErrorUnauthorized(json!({"message": "Auth token expired!"})),
+            )),
             Err(_) => un_auth_err,
         }
     }
