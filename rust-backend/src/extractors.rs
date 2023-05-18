@@ -14,6 +14,11 @@ use uuid::Uuid;
 
 use crate::{AppState, Claims};
 
+/// Extractor that checks for and validates Bearer Token in the Authorization header
+/// 
+/// Sends UNAUTHORIZED response if token is invalid or expired
+/// 
+/// Extracts user id from the token
 #[derive(Serialize, Deserialize)]
 pub struct AuthUser {
     pub id: Uuid,
@@ -65,6 +70,9 @@ impl FromRequest for AuthUser {
     }
 }
 
+/// Custom Query params extractor
+/// 
+/// Create because default actix-web extractor doesn't support array types
 #[derive(Debug)]
 pub struct Query<T>(pub T);
 
