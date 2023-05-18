@@ -1,10 +1,13 @@
-use std::future::{ready, Ready};
+use std::{
+    future::{ready, Ready},
+    ops,
+};
 
 use actix_web::{
     dev::Payload, error, http::header, Error as ActixWebError, FromRequest, HttpRequest,
 };
 use jsonwebtoken::{decode, errors::ErrorKind as JWTError, DecodingKey, Validation};
-use serde::{Deserialize, Serialize};
+use serde::{de::DeserializeOwned, Deserialize, Serialize};
 
 use crate::Claims;
 
@@ -26,7 +29,7 @@ impl FromRequest for AuthUser {
         };
 
         // Must contain Bearer keyword
-        if token.is_empty() || token.len() < 7 {
+        if token.len() < 7 {
             return un_auth_err;
         }
 
@@ -48,5 +51,33 @@ impl FromRequest for AuthUser {
             }
             Err(_) => un_auth_err,
         }
+    }
+}
+
+#[derive(Debug)]
+pub struct Query<T>(pub T);
+
+impl<T: DeserializeOwned> FromRequest for Query<T> {
+    type Error = ActixWebError;
+    type Future = Ready<Result<Self, Self::Error>>;
+
+    fn from_request(req: &HttpRequest, _: &mut Payload) -> Self::Future {
+        let query = req.query_string();
+
+        let config = serde_qs::Config::new(20, false);
+        let parsed = config.deserialize_str(query);
+
+        match parsed {
+            Err(error) => ready(Err(error::ErrorBadRequest(error))),
+            Ok(parsed) => ready(Ok(Query(parsed))),
+        }
+    }
+}
+
+impl<T> ops::Deref for Query<T> {
+    type Target = T;
+
+    fn deref(&self) -> &T {
+        &self.0
     }
 }
