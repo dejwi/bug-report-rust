@@ -49,8 +49,7 @@ pub async fn register(
     {
         Ok(_) => HttpResponse::Ok().json(json!({"message": "Account created successfully"})),
         Err(err) => {
-            return HttpResponse::InternalServerError()
-                .json(json!({ "message": format!("{:?}", err) }));
+            return HttpResponse::InternalServerError().json(json!({ "message": err.to_string() }));
         }
     }
 }
