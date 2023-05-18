@@ -1,5 +1,3 @@
-use std::str::FromStr;
-
 use actix_web::{get, post, put, web, HttpResponse, Responder};
 use serde::Deserialize;
 use serde_json::json;
