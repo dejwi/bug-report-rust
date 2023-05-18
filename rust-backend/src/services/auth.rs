@@ -1,4 +1,4 @@
-use actix_web::{post, web, HttpResponse, Responder};
+use actix_web::{get, post, web, HttpResponse, Responder};
 use argon2::{
     password_hash::{rand_core::OsRng, SaltString},
     Algorithm, Argon2, Params, PasswordHash, PasswordHasher, PasswordVerifier, Version,
@@ -7,7 +7,7 @@ use chrono::{Duration, Utc};
 use jsonwebtoken::{encode, EncodingKey, Header};
 use serde_json::json;
 
-use crate::{models::UserModel, schema::AuthUserSchema, AppState, Claims};
+use crate::{extractors::AuthUser, models::UserModel, schema::AuthUserSchema, AppState, Claims};
 
 #[post("/register")]
 pub async fn register(
@@ -104,5 +104,16 @@ pub async fn login(
             HttpResponse::Ok().json(json!({ "token": token }))
         }
         Err(_) => HttpResponse::Unauthorized().json(json!({"message": "Invalid password"})),
+    }
+}
+
+#[get("/me")]
+pub async fn account_information(user: AuthUser, app_state: web::Data<AppState>) -> impl Responder {
+    match sqlx::query_as!(UserModel, "SELECT * FROM users WHERE id = $1", user.id)
+        .fetch_one(&app_state.db)
+        .await
+    {
+        Err(err) => HttpResponse::InternalServerError().json(json!({ "message": err.to_string() })),
+        Ok(user) => HttpResponse::Ok().json(user),
     }
 }

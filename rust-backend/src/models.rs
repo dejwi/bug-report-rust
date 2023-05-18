@@ -9,6 +9,7 @@ use uuid::Uuid;
 pub struct UserModel {
     pub id: Uuid,
     pub username: String,
+    #[serde(skip_serializing)]
     pub password: String,
     #[serde(rename = "createdAt")]
     pub created_at: chrono::DateTime<chrono::Utc>,
