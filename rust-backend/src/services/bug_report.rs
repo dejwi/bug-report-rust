@@ -114,3 +114,18 @@ pub async fn bug_report_update(
         Ok(report) => HttpResponse::Ok().json(report)
     }
 }
+
+#[get("/bug-reports/{id}")]
+pub async fn bug_reports_one(
+    app_state: web::Data<AppState>,
+    id: web::Path<Uuid>,
+) -> impl Responder {
+    match sqlx::query_as::<_, BugReportWithAuthorSchema>("SELECT id, status, title, description, created_at, users.id as user_id, users.username as user_username FROM bugReports WHERE id = $1 JOIN users on bugReports.id = users.id")
+    .bind(*id)
+    .fetch_optional(&app_state.db)
+    .await {
+        Err(err) =>  HttpResponse::InternalServerError().json(json!({ "message": err.to_string() })),
+        Ok(None) => HttpResponse::NotFound().json(json!({ "message": "Bug report not found" })),
+        Ok(Some(report)) => HttpResponse::Ok().json(report)
+    }
+}
