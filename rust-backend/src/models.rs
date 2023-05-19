@@ -31,7 +31,7 @@ impl PgHasArrayType for BugReportStatus {
     }
 }
 
-#[derive(Serialize, FromRow)]
+#[derive(Serialize, FromRow, Deserialize)]
 pub struct BugReportModel {
     pub id: Uuid,
     pub title: String,

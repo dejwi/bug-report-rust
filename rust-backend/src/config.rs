@@ -19,4 +19,18 @@ impl Config {
     pub fn build() -> Result<Self, envy::Error> {
         envy::from_env::<Config>()
     }
+
+    pub fn empty() -> Self {
+        Self {
+            postgres_host: "".to_string(),
+            postgres_port: 1,
+            postgres_password: "".to_string(),
+            postgres_db: "".to_string(),
+            database_url: "".to_string(),
+            pgadmin_default_email: "".to_string(),
+            pgadmin_default_password: "".to_string(),
+            jwt_secret: "".to_string(),
+            hash_secret: "".to_string(),
+        }
+    }
 }

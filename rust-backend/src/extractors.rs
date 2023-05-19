@@ -5,7 +5,7 @@ use std::{
 };
 
 use actix_web::{
-    dev::Payload, error, http::header, Error as ActixWebError, FromRequest, HttpRequest,
+    dev::Payload, error, http::header, web, Error as ActixWebError, FromRequest, HttpRequest,
 };
 use jsonwebtoken::{decode, errors::ErrorKind as JWTError, DecodingKey, Validation};
 use serde::{de::DeserializeOwned, Deserialize, Serialize};
@@ -15,9 +15,9 @@ use uuid::Uuid;
 use crate::{AppState, Claims};
 
 /// Extractor that checks for and validates Bearer Token in the Authorization header
-/// 
+///
 /// Sends UNAUTHORIZED response if token is invalid or expired
-/// 
+///
 /// Extracts user id from the token
 #[derive(Serialize, Deserialize)]
 pub struct AuthUser {
@@ -46,7 +46,7 @@ impl FromRequest for AuthUser {
         let token = &token[7..];
 
         let jwt_secret = req
-            .app_data::<AppState>()
+            .app_data::<web::Data<AppState>>()
             .unwrap()
             .config
             .jwt_secret
@@ -71,7 +71,7 @@ impl FromRequest for AuthUser {
 }
 
 /// Custom Query params extractor
-/// 
+///
 /// Create because default actix-web extractor doesn't support array types
 #[derive(Debug)]
 pub struct Query<T>(pub T);

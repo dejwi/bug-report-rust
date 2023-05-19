@@ -1,26 +1,7 @@
 use actix_web::{middleware::Logger, web, App, HttpServer};
-use config::Config;
+use bug_report_backend::{config::Config, services, AppState};
 use dotenv::dotenv;
-use serde::{Deserialize, Serialize};
-use sqlx::{postgres::PgPoolOptions, Pool, Postgres};
-
-mod config;
-mod extractors;
-mod models;
-mod schema;
-mod services;
-
-#[derive(Serialize, Deserialize)]
-pub struct Claims {
-    pub id: String,
-    pub exp: i64,
-}
-
-#[derive(Clone)]
-pub struct AppState {
-    pub db: Pool<Postgres>,
-    pub config: Config,
-}
+use sqlx::{postgres::PgPoolOptions, testing::TestSupport, Postgres};
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
@@ -38,6 +19,10 @@ async fn main() -> std::io::Result<()> {
         std::env::set_var("RUST_LOG", "actix_web=info,error,warn");
     }
     env_logger::init();
+
+    if let Err(error) = Postgres::cleanup_test_dbs().await {
+        log::error!("Couldn't clean test databases: {}", error.to_string());
+    }
 
     let pool = match PgPoolOptions::new()
         .max_connections(10)

@@ -354,6 +354,7 @@ name = "bug-report-backend"
 version = "0.1.0"
 dependencies = [
  "actix-cors",
+ "actix-http",
  "actix-web",
  "argon2",
  "chrono",
@@ -361,6 +362,7 @@ dependencies = [
  "env_logger",
  "envy",
  "jsonwebtoken",
+ "log",
  "serde",
  "serde_json",
  "serde_qs",
