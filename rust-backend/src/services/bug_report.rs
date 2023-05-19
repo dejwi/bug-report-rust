@@ -86,6 +86,13 @@ pub async fn bug_report_update(
     };
 
     let is_author = user.id == report.author_id;
+
+    if (body.description.is_some() || body.title.is_some()) && !is_author {
+        return HttpResponse::Unauthorized().json(
+            json!({"message": "You have to be an author in order to edit report title, description"}),
+        );
+    }
+
     if body.status == Some(BugReportStatus::SOLVED) && !is_author {
         return HttpResponse::Unauthorized().json(
             json!({"message": "You have to be an author in order to mark report as solved"}),
