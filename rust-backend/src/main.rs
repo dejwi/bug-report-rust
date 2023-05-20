@@ -36,6 +36,10 @@ async fn main() -> std::io::Result<()> {
         }
     };
 
+    if let Err(error) = sqlx::migrate!("./migrations").run(&pool).await {
+        eprintln!("Error with migrations: {}", error.to_string());
+    }
+
     let app_state = AppState { db: pool, config };
 
     HttpServer::new(move || {
