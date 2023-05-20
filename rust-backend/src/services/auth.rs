@@ -1,26 +1,35 @@
-use actix_web::{get, post, web, HttpResponse, Responder};
+use actix_web::{
+    get, post,
+    web::{self, Json},
+};
 use argon2::{
     password_hash::{rand_core::OsRng, SaltString},
     Algorithm, Argon2, Params, PasswordHash, PasswordHasher, PasswordVerifier, Version,
 };
 use chrono::{Duration, Utc};
 use jsonwebtoken::{encode, EncodingKey, Header};
-use serde_json::json;
+use serde::Serialize;
 
-use crate::{extractors::AuthUser, models::UserModel, schema::AuthUserSchema, AppState, Claims};
+use crate::{
+    error::{self, ServerError},
+    extractors::AuthUser,
+    models::UserModel,
+    schema::AuthUserSchema,
+    AppState, Claims, Message,
+};
 
 #[post("/register")]
 pub async fn register(
     app_state: web::Data<AppState>,
     body: web::Json<AuthUserSchema>,
-) -> impl Responder {
+) -> error::Result<Message> {
     if let Some(_) = sqlx::query!("SELECT * FROM users WHERE username = $1", body.username)
         .fetch_optional(&app_state.db)
-        .await
-        .unwrap()
+        .await?
     {
-        return HttpResponse::Conflict()
-            .json(json!({"message": "Account with that username already exists"}));
+        return Err(ServerError::Conflict(
+            "Account with that username already exists",
+        ));
     }
 
     let salt = SaltString::generate(&mut OsRng);
@@ -39,38 +48,39 @@ pub async fn register(
         .unwrap()
         .to_string();
 
-    match sqlx::query!(
+    sqlx::query!(
         "INSERT INTO users (username, password) VALUES ($1, $2) RETURNING id",
         body.username,
         password_hash
     )
     .fetch_one(&app_state.db)
-    .await
-    {
-        Ok(_) => HttpResponse::Ok().json(json!({"message": "Account created successfully"})),
-        Err(err) => {
-            return HttpResponse::InternalServerError().json(json!({ "message": err.to_string() }));
-        }
-    }
+    .await?;
+
+    Ok(Json(Message::new("Account created successfully")))
+}
+
+#[derive(Serialize)]
+pub struct TokenResponse {
+    pub token: String,
 }
 
 #[post("/login")]
 pub async fn login(
     app_state: web::Data<AppState>,
     body: web::Json<AuthUserSchema>,
-) -> impl Responder {
+) -> error::Result<TokenResponse> {
     let user = match sqlx::query_as!(
         UserModel,
         "SELECT * FROM users WHERE username = $1",
         body.username
     )
     .fetch_optional(&app_state.db)
-    .await
-    .unwrap()
+    .await?
     {
         None => {
-            return HttpResponse::NotFound()
-                .json(json!({"message": "Account with that username doesn't exist"}))
+            return Err(ServerError::NotFound(
+                "Account with that username doesn't exist",
+            ))
         }
         Some(user) => user,
     };
@@ -101,19 +111,19 @@ pub async fn login(
             )
             .unwrap();
 
-            HttpResponse::Ok().json(json!({ "token": token }))
+            Ok(Json(TokenResponse { token }))
         }
-        Err(_) => HttpResponse::Unauthorized().json(json!({"message": "Invalid password"})),
+        Err(_) => Err(ServerError::Unauthorized("Invalid password")),
     }
 }
 
 #[get("/me")]
-pub async fn account_information(user: AuthUser, app_state: web::Data<AppState>) -> impl Responder {
-    match sqlx::query_as!(UserModel, "SELECT * FROM users WHERE id = $1", user.id)
+pub async fn account_information(
+    user: AuthUser,
+    app_state: web::Data<AppState>,
+) -> error::Result<UserModel> {
+    let user = sqlx::query_as!(UserModel, "SELECT * FROM users WHERE id = $1", user.id)
         .fetch_one(&app_state.db)
-        .await
-    {
-        Err(err) => HttpResponse::InternalServerError().json(json!({ "message": err.to_string() })),
-        Ok(user) => HttpResponse::Ok().json(user),
-    }
+        .await?;
+    Ok(Json(user))
 }

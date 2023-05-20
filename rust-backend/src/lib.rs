@@ -3,6 +3,7 @@ use serde::{Deserialize, Serialize};
 use sqlx::{Pool, Postgres};
 
 pub mod config;
+pub mod error;
 pub mod extractors;
 pub mod models;
 pub mod schema;
@@ -19,6 +20,21 @@ pub struct AppState {
     pub db: Pool<Postgres>,
     pub config: Config,
 }
+
+#[derive(Serialize)]
+pub struct Message {
+    pub message: String,
+}
+
+impl Message {
+    fn new(message: &str) -> Message {
+        Message {
+            message: message.to_string(),
+        }
+    }
+}
+
+
 
 #[cfg(test)]
 use actix_web::rt;

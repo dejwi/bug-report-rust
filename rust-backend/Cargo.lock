@@ -367,6 +367,7 @@ dependencies = [
  "serde_json",
  "serde_qs",
  "sqlx",
+ "thiserror",
  "uuid",
 ]
 
