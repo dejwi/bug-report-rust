@@ -112,4 +112,21 @@ async fn integration() {
     assert_eq!(updated.description, update_report.description);
     assert_eq!(updated.title, update_report.title.unwrap());
     assert_eq!(updated.status, update_report.status.unwrap());
+
+    // Delete report
+    let req = test::TestRequest::delete()
+        .uri(&format!("/bug-reports/{}", report.id.to_string()))
+        .insert_header(auth.clone())
+        .to_request();
+    let resp = test::call_service(&app, req).await;
+
+    assert_eq!(resp.status(), StatusCode::OK);
+
+    let req = test::TestRequest::delete()
+        .uri(&format!("/bug-reports/{}", report.id.to_string()))
+        .insert_header(auth.clone())
+        .to_request();
+    let resp = test::call_service(&app, req).await;
+
+    assert_eq!(resp.status(), StatusCode::NOT_FOUND);
 }

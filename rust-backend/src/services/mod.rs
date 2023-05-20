@@ -11,4 +11,5 @@ pub fn set_services(conf: &mut web::ServiceConfig) {
     conf.service(bug_report::bug_report_all);
     conf.service(bug_report::bug_report_update);
     conf.service(bug_report::bug_report_one);
+    conf.service(bug_report::bug_report_delete);
 }
