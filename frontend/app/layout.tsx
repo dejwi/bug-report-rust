@@ -1,8 +1,11 @@
 import './globals.css'
 
 import { Inter } from 'next/font/google'
+import { Toaster } from 'react-hot-toast'
 
-import ReactQueryWrapper from './react-query-wrapper'
+import { NextAuthProvider } from '../components/wrappers/next-auth'
+import ReactQueryWrapper from '../components/wrappers/react-query'
+import TokenWrapper from '../components/wrappers/token'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -17,9 +20,16 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en">
+    <html lang="en" data-theme="dracula">
       <ReactQueryWrapper>
-        <body className={inter.className}>{children}</body>
+        <NextAuthProvider>
+          <TokenWrapper>
+            <body className={inter.className}>
+              {children}
+              <Toaster />
+            </body>
+          </TokenWrapper>
+        </NextAuthProvider>
       </ReactQueryWrapper>
     </html>
   )

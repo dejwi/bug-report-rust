@@ -1,12 +1,11 @@
 import axios from 'axios'
 
 export const api = axios.create({
-  baseURL: 'http://localhost:8000',
-  headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
+  baseURL: process.env.BACKEND_URL,
 })
 api.interceptors.request.use(async request => {
   if (typeof window !== undefined) {
-    const token = localStorage.getItem('token')
+    const token = localStorage.gItem('token')
     if (token) {
       request.headers.common = {
         Authorization: `Bearer ${token}`,

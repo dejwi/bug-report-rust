@@ -7,7 +7,7 @@ const queryClient = new QueryClient()
 
 const ReactQueryWrapper = ({ children }: { children: React.ReactNode }) => (
   <QueryClientProvider client={queryClient}>
-    <ReactQueryDevtools initialIsOpen={false} />
+    <ReactQueryDevtools />
     {children}
   </QueryClientProvider>
 )

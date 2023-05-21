@@ -2,9 +2,15 @@
 import NextAuth from 'next-auth'
 
 declare module 'next-auth' {
+  interface User {
+    accessToken: string
+    id: string
+  }
+
   interface Session {
     user: {
-      token: string
+      accessToken: string
+      id: string
     }
   }
 }
