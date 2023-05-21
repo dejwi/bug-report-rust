@@ -9,6 +9,7 @@ use argon2::{
 use chrono::{Duration, Utc};
 use jsonwebtoken::{encode, EncodingKey, Header};
 use serde::Serialize;
+use uuid::Uuid;
 
 use crate::{
     error::{self, ServerError},
@@ -62,6 +63,7 @@ pub async fn register(
 #[derive(Serialize)]
 pub struct TokenResponse {
     pub token: String,
+    pub id: Uuid,
 }
 
 #[post("/login")]
@@ -111,7 +113,7 @@ pub async fn login(
             )
             .unwrap();
 
-            Ok(Json(TokenResponse { token }))
+            Ok(Json(TokenResponse { token, id: user.id }))
         }
         Err(_) => Err(ServerError::Unauthorized("Invalid password")),
     }
