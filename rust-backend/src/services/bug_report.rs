@@ -52,6 +52,8 @@ pub async fn bug_report_all(
         query.push(") ");
     }
 
+    query.push(" ORDER BY bugReports.created_at desc");
+
     let bug_reports = query
         .build_query_as::<BugReportWithAuthorSchema>()
         .fetch_all(&app_state.db)
