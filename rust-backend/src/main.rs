@@ -1,5 +1,5 @@
 use actix_cors::Cors;
-use actix_web::{http, middleware::Logger, web, App, HttpServer};
+use actix_web::{middleware::Logger, web, App, HttpServer};
 use bug_report_backend::{config::Config, services, AppState};
 use dotenv::dotenv;
 use sqlx::{postgres::PgPoolOptions, testing::TestSupport, Postgres};
