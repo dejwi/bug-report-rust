@@ -12,6 +12,7 @@ pub struct Config {
     pgadmin_default_password: String,
     pub jwt_secret: String,
     pub hash_secret: String,
+    pub frontend_url: String,
 }
 
 impl Config {
@@ -31,6 +32,7 @@ impl Config {
             pgadmin_default_password: "".to_string(),
             jwt_secret: "".to_string(),
             hash_secret: "".to_string(),
+            frontend_url: "".to_string(),
         }
     }
 }

@@ -1,4 +1,5 @@
-use actix_web::{middleware::Logger, web, App, HttpServer};
+use actix_cors::Cors;
+use actix_web::{http, middleware::Logger, web, App, HttpServer};
 use bug_report_backend::{config::Config, services, AppState};
 use dotenv::dotenv;
 use sqlx::{postgres::PgPoolOptions, testing::TestSupport, Postgres};
@@ -43,7 +44,14 @@ async fn main() -> std::io::Result<()> {
     let app_state = AppState { db: pool, config };
 
     HttpServer::new(move || {
+        let cors = Cors::default()
+            .allowed_origin(&app_state.config.frontend_url)
+            .allow_any_header()
+            .allow_any_method()
+            .max_age(3600);
+
         App::new()
+            .wrap(cors)
             .wrap(Logger::default())
             .app_data(web::Data::new(app_state.clone()))
             .configure(services::set_services)
