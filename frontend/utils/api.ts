@@ -4,13 +4,11 @@ export const api = axios.create({
   baseURL: process.env.BACKEND_URL,
 })
 api.interceptors.request.use(async request => {
-  if (typeof window !== undefined) {
-    const token = localStorage.gItem('token')
-    if (token) {
-      request.headers.common = {
-        Authorization: `Bearer ${token}`,
-      }
-    }
+  const token =
+    typeof window !== 'undefined' ? window.localStorage.getItem('token') : ''
+
+  if (token) {
+    request.headers.Authorization = `Bearer ${token}`
   }
 
   return request

@@ -7,7 +7,7 @@ const Navbar = () => {
   const { status } = useSession()
 
   return (
-    <div className="navbar bg-base-100">
+    <div className="navbar">
       <div className="navbar-start gap-2">
         <Link className="btn-ghost btn text-xl normal-case" href="/">
           BugReport

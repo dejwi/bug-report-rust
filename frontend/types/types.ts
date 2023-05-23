@@ -20,3 +20,8 @@ export interface BugReportWithAuthor extends Omit<BugReport, 'authorId'> {
     username: string
   }
 }
+export interface UpdateBugReport {
+  title?: string
+  description?: string
+  status?: BugReportStatus
+}

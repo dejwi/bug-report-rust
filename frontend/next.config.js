@@ -1,6 +1,6 @@
 const path = require('path')
 
-const {parsed: env} = require("dotenv").config({ path: path.resolve(__dirname, `../.env`) });
+const {parsed: env} = require("dotenv").config({ path: './../.env' });
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {env}
