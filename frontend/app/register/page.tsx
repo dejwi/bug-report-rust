@@ -5,24 +5,24 @@ import { useRouter } from 'next/navigation'
 import AuthPage from '@/components/auth/page'
 
 import { AuthFields } from '../../components/auth/schema'
-import { useLogin } from '../../hooks/auth'
+import { useRegister } from '../../hooks/auth'
 
-const LoginPage = () => {
+const RegisterPage = () => {
   const router = useRouter()
 
-  const { mutate: login } = useLogin({
+  const { mutate: register } = useRegister({
     onSuccess() {
       setTimeout(() => {
-        router.replace('/')
+        router.push('/login')
       }, 600)
     },
   })
 
   const onSubmit = (data: AuthFields) => {
-    login(data)
+    register(data)
   }
 
-  return <AuthPage onSubmit={onSubmit} type="login" />
+  return <AuthPage onSubmit={onSubmit} type="register" />
 }
 
-export default LoginPage
+export default RegisterPage

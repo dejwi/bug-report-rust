@@ -12,11 +12,15 @@ const Navbar = () => {
         <Link className="btn-ghost btn text-xl normal-case" href="/">
           BugReport
         </Link>
-        {status === 'authenticated' && (
-          <button type="button" className="btn-secondary btn">
-            ADD
-          </button>
-        )}
+      </div>
+      <div className="navbar-center">
+        <Link
+          type="button"
+          className="btn"
+          href={status === 'authenticated' ? '/create' : '/login'}
+        >
+          CREATE
+        </Link>
       </div>
       <div className="navbar-end">
         {status === 'authenticated' ? (
@@ -24,7 +28,7 @@ const Navbar = () => {
             LogOut
           </button>
         ) : (
-          <Link href="/login" className="btn-primary btn">
+          <Link href="/login" className="btn">
             Login
           </Link>
         )}

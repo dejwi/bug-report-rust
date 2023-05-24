@@ -1,8 +1,8 @@
 import * as yup from 'yup'
 
-export const loginSchema = yup.object({
+export const authSchema = yup.object({
   username: yup.string().required(),
   password: yup.string().required(),
 })
 
-export type FormFields = yup.InferType<typeof loginSchema>
+export type AuthFields = yup.InferType<typeof authSchema>

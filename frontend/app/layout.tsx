@@ -1,5 +1,6 @@
 import './globals.css'
 
+import clsx from 'clsx'
 import { Inter } from 'next/font/google'
 import { Toaster } from 'react-hot-toast'
 
@@ -20,11 +21,13 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en" data-theme="dracula">
+    <html lang="en" data-theme="dracula" className="overflow-y-scroll">
       <ReactQueryWrapper>
         <NextAuthProvider>
           <TokenWrapper>
-            <body className={inter.className}>
+            <body
+              className={clsx(inter.className, 'flex min-h-screen flex-col')}
+            >
               {children}
               <Toaster />
             </body>

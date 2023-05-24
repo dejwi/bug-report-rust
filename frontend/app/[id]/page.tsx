@@ -1,4 +1,4 @@
-import BugReport from '@/components/bug-report'
+import BugReport from '@/components/bug-report/bug-report'
 import Navbar from '@/components/navbar'
 import { BugReportWithAuthor } from '@/types/types'
 import { api } from '@/utils/api'

@@ -51,8 +51,8 @@ const options: NextAuthOptions = {
     session: ({ session, token }) => ({
       ...session,
       user: {
-        accessToken: token.accessToken as string,
-        id: token.id as string,
+        accessToken: token?.accessToken as string,
+        id: token?.id as string,
       },
     }),
   },
@@ -61,6 +61,7 @@ const options: NextAuthOptions = {
   },
   pages: {
     signIn: '/login',
+    signOut: '/',
   },
 }
 
