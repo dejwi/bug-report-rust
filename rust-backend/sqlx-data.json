@@ -1,0 +1,262 @@
+{
+  "db": "PostgreSQL",
+  "1ea4a3f1d8f72d6aa47e63a6b10518dd2961b8f6e72189105959ad8cd065702f": {
+    "describe": {
+      "columns": [
+        {
+          "name": "id",
+          "ordinal": 0,
+          "type_info": "Uuid"
+        }
+      ],
+      "nullable": [
+        false
+      ],
+      "parameters": {
+        "Left": [
+          "Varchar",
+          "Text"
+        ]
+      }
+    },
+    "query": "INSERT INTO users (username, password) VALUES ($1, $2) RETURNING id"
+  },
+  "552322bec288af510b726caa42253fbba30fe9a679556c3a5fc78288313b8316": {
+    "describe": {
+      "columns": [
+        {
+          "name": "id",
+          "ordinal": 0,
+          "type_info": "Uuid"
+        }
+      ],
+      "nullable": [
+        false
+      ],
+      "parameters": {
+        "Left": [
+          "Uuid"
+        ]
+      }
+    },
+    "query": "DELETE FROM bugReports WHERE id = $1 RETURNING id"
+  },
+  "606364c79e0990deb07dfbe6c32b3d302d083ec5333f3a5ce04113c38a041100": {
+    "describe": {
+      "columns": [
+        {
+          "name": "id",
+          "ordinal": 0,
+          "type_info": "Uuid"
+        },
+        {
+          "name": "username",
+          "ordinal": 1,
+          "type_info": "Varchar"
+        },
+        {
+          "name": "password",
+          "ordinal": 2,
+          "type_info": "Text"
+        },
+        {
+          "name": "created_at",
+          "ordinal": 3,
+          "type_info": "Timestamptz"
+        }
+      ],
+      "nullable": [
+        false,
+        false,
+        false,
+        false
+      ],
+      "parameters": {
+        "Left": [
+          "Text"
+        ]
+      }
+    },
+    "query": "SELECT * FROM users WHERE username = $1"
+  },
+  "843923b9a0257cf80f1dff554e7dc8fdfc05f489328e8376513124dfb42996e3": {
+    "describe": {
+      "columns": [
+        {
+          "name": "id",
+          "ordinal": 0,
+          "type_info": "Uuid"
+        },
+        {
+          "name": "username",
+          "ordinal": 1,
+          "type_info": "Varchar"
+        },
+        {
+          "name": "password",
+          "ordinal": 2,
+          "type_info": "Text"
+        },
+        {
+          "name": "created_at",
+          "ordinal": 3,
+          "type_info": "Timestamptz"
+        }
+      ],
+      "nullable": [
+        false,
+        false,
+        false,
+        false
+      ],
+      "parameters": {
+        "Left": [
+          "Uuid"
+        ]
+      }
+    },
+    "query": "SELECT * FROM users WHERE id = $1"
+  },
+  "8c0520c2c5cb3a20faf9a8e4c6d6e1222a89afdd599f512043a5ddb6ee64e58c": {
+    "describe": {
+      "columns": [
+        {
+          "name": "id",
+          "ordinal": 0,
+          "type_info": "Uuid"
+        },
+        {
+          "name": "status: _",
+          "ordinal": 1,
+          "type_info": {
+            "Custom": {
+              "kind": {
+                "Enum": [
+                  "OPEN",
+                  "CLOSED",
+                  "SOLVED",
+                  "REVIEW",
+                  "ACCEPTED"
+                ]
+              },
+              "name": "bugreportstatus"
+            }
+          }
+        },
+        {
+          "name": "author_id",
+          "ordinal": 2,
+          "type_info": "Uuid"
+        },
+        {
+          "name": "title",
+          "ordinal": 3,
+          "type_info": "Varchar"
+        },
+        {
+          "name": "description",
+          "ordinal": 4,
+          "type_info": "Text"
+        },
+        {
+          "name": "created_at",
+          "ordinal": 5,
+          "type_info": "Timestamptz"
+        }
+      ],
+      "nullable": [
+        false,
+        false,
+        false,
+        false,
+        true,
+        false
+      ],
+      "parameters": {
+        "Left": [
+          "Varchar",
+          "Text",
+          {
+            "Custom": {
+              "kind": {
+                "Enum": [
+                  "OPEN",
+                  "CLOSED",
+                  "SOLVED",
+                  "REVIEW",
+                  "ACCEPTED"
+                ]
+              },
+              "name": "bugreportstatus"
+            }
+          },
+          "Uuid"
+        ]
+      }
+    },
+    "query": "UPDATE bugReports SET title = $1, description = $2, status = $3 WHERE id = $4 RETURNING id, status as \"status: _\", author_id, title, description, created_at"
+  },
+  "a8601541a02c4bfa3078c3ec5d8c97d7c2c2258805530574b7fa895a7b0d85b6": {
+    "describe": {
+      "columns": [
+        {
+          "name": "id",
+          "ordinal": 0,
+          "type_info": "Uuid"
+        },
+        {
+          "name": "status: _",
+          "ordinal": 1,
+          "type_info": {
+            "Custom": {
+              "kind": {
+                "Enum": [
+                  "OPEN",
+                  "CLOSED",
+                  "SOLVED",
+                  "REVIEW",
+                  "ACCEPTED"
+                ]
+              },
+              "name": "bugreportstatus"
+            }
+          }
+        },
+        {
+          "name": "author_id",
+          "ordinal": 2,
+          "type_info": "Uuid"
+        },
+        {
+          "name": "title",
+          "ordinal": 3,
+          "type_info": "Varchar"
+        },
+        {
+          "name": "description",
+          "ordinal": 4,
+          "type_info": "Text"
+        },
+        {
+          "name": "created_at",
+          "ordinal": 5,
+          "type_info": "Timestamptz"
+        }
+      ],
+      "nullable": [
+        false,
+        false,
+        false,
+        false,
+        true,
+        false
+      ],
+      "parameters": {
+        "Left": [
+          "Uuid"
+        ]
+      }
+    },
+    "query": "SELECT id, status as \"status: _\", author_id, title, description, created_at FROM bugReports WHERE id = $1"
+  }
+}

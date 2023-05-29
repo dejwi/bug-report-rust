@@ -1,12 +1,6 @@
-const path = require('path')
-
-const {parsed: env} = require("dotenv").config({ path: './../.env' });
-
-console.log(env);
-
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  env, 
+  // env, 
   webpack(config) {
     config.module.rules.push({
       test: /\.svg$/i,

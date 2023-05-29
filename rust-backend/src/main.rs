@@ -56,7 +56,7 @@ async fn main() -> std::io::Result<()> {
             .app_data(web::Data::new(app_state.clone()))
             .configure(services::set_services)
     })
-    .bind(("127.0.0.1", 8000))?
+    .bind(("0.0.0.0", 8000))?
     .run()
     .await
 }

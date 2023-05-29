@@ -4,7 +4,7 @@ services:
     image: postgres:latest
     container_name: postgres
     ports:
-      - '6500:5432'
+      - '5432:5432'
     volumes:
       - pgdata:/var/lib/postgresql/data
     env_file:
@@ -16,5 +16,31 @@ services:
       - ./.env
     ports:
       - "5050:80"
+  backend:
+    image: bug-report/backend
+    build:
+      context: ./rust-backend
+      dockerfile: dev.Dockerfile
+    env_file:
+      - ./.env
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./rust-backend:/app
+    depends_on:
+      - postgres
+  frontend:
+    image: bug-report/frontend
+    build:
+      context: ./frontend
+      dockerfile: dev.Dockerfile
+    env_file:
+      - ./.env
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./frontend:/app
+    depends_on:
+      - backend
 volumes:
   pgdata:
