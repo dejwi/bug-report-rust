@@ -45,7 +45,7 @@ FRONTEND_URL=http://localhost:3000
 
 # Frontend related
 
-NEXTAUTH_SECRET=gdfgdfhfghsfj4m65464
+NEXTAUTH_SECRET=unsafesecret
 NEXTAUTH_URL=http://localhost:3000
 NEXT_PUBLIC_BACKEND_URL=http://localhost:8000
 
