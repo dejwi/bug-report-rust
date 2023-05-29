@@ -3,6 +3,7 @@ Created for the sole purpose of learning (rust)
 
 ## Stack (overall)
 Backend - rust, actix-web, sqlx, jsonwebtoken, envy, argon2, ~serde
+
 Frontend - nextJs, typescript, tailwindcss, nextauth, daisyui, hookform, framer-motion
 
 # Features
