@@ -1,13 +1,10 @@
 use actix_cors::Cors;
 use actix_web::{middleware::Logger, web, App, HttpServer};
 use bug_report_backend::{config::Config, services, AppState};
-use dotenv::dotenv;
 use sqlx::{postgres::PgPoolOptions, testing::TestSupport, Postgres};
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
-    dotenv().ok();
-
     let config = match Config::build() {
         Ok(config) => config,
         Err(error) => {

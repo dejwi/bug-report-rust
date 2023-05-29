@@ -23,8 +23,6 @@
     "axios": "^1.4.0",
     "clsx": "^1.2.1",
     "daisyui": "^2.51.6",
-    "dotenv": "^16.0.3",
-    "dotenv-safe": "^8.2.0",
     "eslint": "8.41.0",
     "eslint-config-airbnb": "^19.0.4",
     "eslint-config-airbnb-base": "^15.0.0",
