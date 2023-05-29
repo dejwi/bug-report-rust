@@ -112,3 +112,43 @@ export const useCreateBugReport = () =>
       })
     },
   })
+
+export const useDeleteBugReport = (id: string, onSuccess?: () => void) =>
+  useMutation({
+    mutationFn: () => {
+      const statusToastId = toast.loading('Deleting report', {
+        duration: Infinity,
+      })
+
+      return new Promise((resolve, reject) => {
+        api
+          .delete<BugReport>(`/bug-reports/${id}`)
+          .then(() => {
+            toast.success('Successfully deleted report', {
+              id: statusToastId,
+              duration: 2000,
+            })
+            resolve(true)
+          })
+          .catch(err => {
+            toast.error(err.response.data.message, {
+              id: statusToastId,
+              duration: 4000,
+            })
+            reject(err.response.data.message)
+          })
+      })
+    },
+    onSuccess: async () => {
+      const queryKey = ['bug-reports', 'all']
+      await queryClient.cancelQueries({ queryKey })
+
+      queryClient.setQueryData<BugReportWithAuthor[]>(queryKey, old =>
+        old?.filter(r => r.id !== id),
+      )
+
+      queryClient.invalidateQueries({ queryKey })
+
+      if (onSuccess) onSuccess()
+    },
+  })

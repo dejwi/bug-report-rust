@@ -13,9 +13,7 @@ interface Props {
 
 const EditBugReport = ({ data }: Props) => {
   const router = useRouter()
-  const { mutate: update } = useUpdateBugReport(data.id, () => {
-    setTimeout(() => router.push(`/${data.id}`), 2000)
-  })
+  const { mutate: update } = useUpdateBugReport(data.id)
 
   return (
     <>
