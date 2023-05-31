@@ -8,11 +8,11 @@ Frontend - nextJs, typescript, tailwindcss, nextauth, daisyui, hookform, framer-
 
 # Features
 - CRUD api
-- filtering
 - full auth with jwt bearer tokens
-- CORS
 - hashing passwords
 - backend integration test
+- CORS
+- filtering
 
 # How to run locally with Docker
 1. Setup .env - [see this](#env) 
